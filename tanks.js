@@ -4,9 +4,9 @@ let lastTimestamp = 0;
 let pressedKeys = {};
 let mousePosition = {x: 0, y: 0};
 
-let launchRadius = 100;
+let launchRadius = 50;
 let launchAngle = -Math.PI/4;
-let launchVelocity = 1000;
+let launchVelocity = 750;
 
 let cameraX = 0, cameraY = 0;
 

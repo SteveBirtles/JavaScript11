@@ -20,6 +20,7 @@ class Projectile {
             this.dy += gravity * frameLength;
             this.x += this.dx * frameLength;
             this.y += this.dy * frameLength;
+            if (this.x < -10 || this.x > WORLD_WIDTH+10 || this.y > WORLD_HEIGHT+10) this.expired = true;
             if (testMask(this.x, this.y)) {
                 this.exploding = 0.00001;
                 const maskContext = maskCanvas.getContext('2d');

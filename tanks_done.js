@@ -8,8 +8,6 @@ let launchRadius = 50;
 let launchAngle = -Math.PI/4;
 let launchVelocity = 750;
 
-let cameraX = 0, cameraY = 0;
-
 const foregroundTexture = new Image();
 const backgroundTexture = new Image();
 
@@ -36,9 +34,15 @@ function pageLoad() {
     foregroundTexture.onload = () => {
         backgroundTexture.src = "sky.jpg";
         backgroundTexture.onload = () => {
-            window.requestAnimationFrame(gameFrame);
+            loadPlayerImages.then(() => {
+                window.requestAnimationFrame(gameFrame);
+            });
         };
     };
+
+    players.push(new Player(WORLD_WIDTH/4, WORLD_HEIGHT/2, 1, -1));
+    players.push(new Player(3*WORLD_WIDTH/4, WORLD_HEIGHT/2, 2, 1));
+
 }
 
 function prepareListeners() {
@@ -179,6 +183,10 @@ function outputs() {
  for (let projectile of projectiles) {
      projectile.draw(context);
  }
+
+  for (let player of players) {
+      player.draw(context);
+  }
 
  drawMiniMap(context)
 

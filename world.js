@@ -1,6 +1,8 @@
 const WORLD_WIDTH = 4000;
 const WORLD_HEIGHT = 2000;
 
+let cameraX = 0, cameraY = 0;
+
 const maskCanvas = new OffscreenCanvas(WORLD_WIDTH, WORLD_HEIGHT);
 
 function prepareMask() {

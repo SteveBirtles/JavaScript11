@@ -80,7 +80,33 @@ function gameFrame(timestamp) {
 
 function inputs(frameLength) {
 
+    let lastCameraX = cameraX;
+    let lastCameraY = cameraY;
+
     /* Map moving controls go here */
+    if (pressedKeys["ArrowUp"]) {
+        cameraY -= 500*frameLength;
+        if (cameraY < 0) cameraY = 0;
+    }
+
+    if (pressedKeys["ArrowDown"]) {
+        cameraY += 500*frameLength;
+        if (cameraY > WORLD_HEIGHT - h) cameraY = WORLD_HEIGHT - h;
+    }
+
+    if (pressedKeys["ArrowLeft"]) {
+        cameraX -= 500*frameLength;
+        if (cameraX < 0) cameraX = 0;
+    }
+
+    if (pressedKeys["ArrowRight"]) {
+        cameraX += 500*frameLength;
+        if (cameraX > WORLD_WIDTH - w) cameraX = WORLD_WIDTH - w;
+    }
+
+    mousePosition.x += cameraX - lastCameraX;
+    mousePosition.y += cameraY - lastCameraY;
+
 
     /* Launch angle, etc., controls go here */
 
@@ -108,7 +134,22 @@ function outputs() {
   context.globalCompositeOperation="copy";
   context.drawImage(maskCanvas, cameraX, cameraY, w, h, 0, 0, w, h);
 
-  /* Texture mapping code goes here */
+  context.globalCompositeOperation="source-atop";
+  let x0 = -cameraX % foregroundTexture.width;
+  let y0 = -cameraY % foregroundTexture.height;
+  for (let i = x0; i < w; i += foregroundTexture.width) {
+      for (let j = y0; j < h; j += foregroundTexture.height) {
+          context.drawImage(foregroundTexture, i, j);
+      }
+  }
+
+  context.globalCompositeOperation="destination-over";
+  for (let i = 0; i < w; i += backgroundTexture.width) {
+     for (let j = 0; j < h; j += backgroundTexture.height) {
+         context.drawImage(backgroundTexture, i, j);
+     }
+ }
+
 
   for (let projectile of projectiles) {
      projectile.draw(context);
@@ -117,5 +158,14 @@ function outputs() {
   drawMiniMap(context)
 
   /* Launch cursor code goes here */
+
+  context.fillStyle = 'limegreen';
+  context.beginPath();
+  let x = mousePosition.x - cameraX;
+  let y = mousePosition.y - cameraY;
+  context.arc(x, y, 50, 0, 2*Math.PI);
+  context.fill();
+
+
 
 }

@@ -4,10 +4,6 @@ let lastTimestamp = 0;
 let pressedKeys = {};
 let mousePosition = {x: 0, y: 0};
 
-let launchRadius = 50;
-let launchAngle = -Math.PI/4;
-let launchVelocity = 750;
-
 const foregroundTexture = new Image();
 const backgroundTexture = new Image();
 
@@ -40,8 +36,8 @@ function pageLoad() {
         };
     };
 
-    players.push(new Player(WORLD_WIDTH/4, WORLD_HEIGHT/2, 1, -1));
-    players.push(new Player(3*WORLD_WIDTH/4, WORLD_HEIGHT/2, 2, 1));
+    players.push(new Player(0, WORLD_WIDTH/4, WORLD_HEIGHT/2 - playerImages[1].height/2, 1));
+    players.push(new Player(1, 3*WORLD_WIDTH/4, WORLD_HEIGHT/2 - playerImages[2].height/2, 2));
 
 }
 
@@ -59,22 +55,20 @@ function prepareListeners() {
       mousePosition.y = event.clientY + cameraY;
     });
 
-    canvas.addEventListener('click', event => {
-        projectiles.push(new Projectile(mousePosition.x, mousePosition.y,
-                                        launchVelocity * Math.sin(launchAngle), -launchVelocity * Math.cos(launchAngle),
-                                        launchRadius, false));
-    }, false);
+    /*canvas.addEventListener('click', event => {
 
-    canvas.addEventListener('contextmenu', event => {
+    }, false);*/
+
+    /*canvas.addEventListener('contextmenu', event => {
         projectiles.push(new Projectile(mousePosition.x, mousePosition.y,
-                                        launchVelocity * Math.sin(launchAngle), -launchVelocity * Math.cos(launchAngle),
-                                        launchRadius, true));
+                                        players[playerTurn].launchVelocity * Math.sin(players[playerTurn].launchAngle), -players[playerTurn].launchVelocity * Math.cos(players[playerTurn].launchAngle),
+                                        players[playerTurn].launchRadius, true));
       event.preventDefault();
-    }, false);
+    }, false);*/
 
     canvas.addEventListener('wheel', event => {
-        launchRadius -= event.deltaY / 10;
-        if (launchRadius < 10) launchRadius = 10;
+        players[playerTurn].launchRadius -= event.deltaY / 10;
+        if (players[playerTurn].launchRadius < 10) players[playerTurn].launchRadius = 10;
     }, false);
 
 }
@@ -119,23 +113,29 @@ function inputs(frameLength) {
   }
 
   if (pressedKeys["s"]) {
-      launchVelocity -= 500*frameLength;
-      if (launchVelocity < 100) launchVelocity = 100;
+      players[playerTurn].launchVelocity -= 500*frameLength;
+      if (players[playerTurn].launchVelocity < 100) players[playerTurn].launchVelocity = 100;
   }
 
   if (pressedKeys["w"]) {
-      launchVelocity += 500*frameLength;
-      if (launchVelocity > 2000) launchVelocity = 2000;
+      players[playerTurn].launchVelocity += 500*frameLength;
+      if (players[playerTurn].launchVelocity > 2000) players[playerTurn].launchVelocity = 2000;
   }
 
   if (pressedKeys["a"]) {
-      launchAngle -= frameLength;
-      if (launchAngle < -Math.PI) launchAngle = -Math.PI;
+      players[playerTurn].launchAngle -= frameLength;
+      if (players[playerTurn].launchAngle < -Math.PI) players[playerTurn].launchAngle = -Math.PI;
   }
 
   if (pressedKeys["d"]) {
-      launchAngle += frameLength;
-      if (launchAngle > Math.PI) launchAngle = Math.PI;
+      players[playerTurn].launchAngle += frameLength;
+      if (players[playerTurn].launchAngle > Math.PI) players[playerTurn].launchAngle = Math.PI;
+  }
+
+  if (pressedKeys[" "]) {
+    projectiles.push(new Projectile(players[playerTurn].x, players[playerTurn].y,
+                                    players[playerTurn].launchVelocity * Math.sin(players[playerTurn].launchAngle), -players[playerTurn].launchVelocity * Math.cos(players[playerTurn].launchAngle),
+                                    players[playerTurn].launchRadius, false));
   }
 
   mousePosition.x += cameraX - lastCameraX;
@@ -189,27 +189,5 @@ function outputs() {
   }
 
  drawMiniMap(context)
-
- context.lineWidth = 4;
- context.strokeStyle = 'red';
-
- context.beginPath();
- context.moveTo(mousePosition.x - cameraX, mousePosition.y - cameraY - 50);
- context.lineTo(mousePosition.x - cameraX, mousePosition.y - cameraY + 50);
- context.stroke();
-
- context.beginPath();
- context.moveTo(mousePosition.x - cameraX - 50, mousePosition.y - cameraY);
- context.lineTo(mousePosition.x - cameraX + 50, mousePosition.y - cameraY);
- context.stroke();
-
-  context.beginPath();
-  context.arc(mousePosition.x - cameraX, mousePosition.y - cameraY, launchRadius, 0, 2*Math.PI);
-  context.stroke();
-
-  context.beginPath();
-  context.moveTo(mousePosition.x - cameraX, mousePosition.y - cameraY);
-  context.lineTo(mousePosition.x - cameraX + (launchVelocity/4)*Math.sin(launchAngle), mousePosition.y - cameraY - (launchVelocity/4)*Math.cos(launchAngle));
-  context.stroke();
 
 }

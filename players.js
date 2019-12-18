@@ -52,7 +52,7 @@ class Player {
         context.translate(this.x - playerImages[this.imageNo].width/2 - cameraX,
                             this.y - playerImages[this.imageNo].height/2 - cameraY);
 
-        let facingRight = this.x < WORLD_WIDTH/2; // THIS LINE IS TEMPORARY
+        let facingRight = this.launchAngle > 0;
 
         if (facingRight) {
             context.scale(-1, 1);
